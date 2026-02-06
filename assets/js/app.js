@@ -21,17 +21,29 @@ const aiAnalysisContainer = document.getElementById('aiAnalysisContainer');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 SafeSound AI JavaScript loaded!');
+    
     canvas = document.getElementById('audioCanvas');
     if (canvas) {
         canvasCtx = canvas.getContext('2d');
         setupCanvas();
+        console.log('✅ Canvas initialized');
+    } else {
+        console.log('❌ Canvas not found');
     }
     
     if (startBtn) {
         startBtn.addEventListener('click', startRecording);
+        console.log('✅ Start button event listener added');
+    } else {
+        console.log('❌ Start button not found');
     }
+    
     if (stopBtn) {
         stopBtn.addEventListener('click', stopRecording);
+        console.log('✅ Stop button event listener added');
+    } else {
+        console.log('❌ Stop button not found');
     }
     
     // Contact form
@@ -100,8 +112,10 @@ function setupCanvas() {
 
 // Start audio recording with visualization
 async function startRecording() {
+    console.log('🎤 Starting recording...');
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log('✅ Microphone access granted');
         
         // Setup audio context for visualization
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -117,13 +131,18 @@ async function startRecording() {
         // Setup media recorder
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = event => {
+            console.log('📊 Audio data available, size:', event.data.size);
             audioChunks.push(event.data);
         };
-        mediaRecorder.onstop = processAudio;
+        mediaRecorder.onstop = () => {
+            console.log('⏹️ Recording stopped, processing audio...');
+            processAudio();
+        };
         
         // Start recording
         mediaRecorder.start();
         isRecording = true;
+        console.log('🔴 Recording started');
         
         // Update UI
         startBtn.classList.add('d-none');
@@ -137,12 +156,14 @@ async function startRecording() {
         // Process audio every 5 seconds
         recordingInterval = setInterval(() => {
             if (isRecording) {
+                console.log('⏰ 5 seconds passed, stopping current chunk...');
                 mediaRecorder.stop();
                 mediaRecorder.start();
             }
         }, 5000);
         
     } catch (error) {
+        console.error('❌ Microphone error:', error);
         showAlert('Error accessing microphone: ' + error.message, 'danger');
     }
 }
@@ -225,20 +246,53 @@ function stopRecording() {
     }
 }
 
-// Process audio chunk
+// Process audio chunk with real Huawei ModelArts API
 async function processAudio() {
     if (audioChunks.length === 0) return;
     
     const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
     audioChunks = [];
     
-    // Simulate AI processing
-    setTimeout(() => {
+    console.log('🎵 Processing audio chunk, size:', audioBlob.size, 'bytes');
+    
+    try {
+        // Send to Python backend (Huawei ModelArts)
+        const formData = new FormData();
+        formData.append('file', audioBlob, 'audio.wav');
+        
+        console.log('📡 Sending to Python backend: http://localhost:8001/predict');
+        
+        const response = await fetch('http://localhost:8001/predict', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log('✅ SUCCESS: Real Huawei ModelArts response:', result);
+            displayDetectionResult(result);
+            addToDetectionHistory(result);
+            showAIAnalysis(result);
+        } else {
+            console.error('❌ API Error:', response.status, response.statusText);
+            const errorText = await response.text();
+            console.error('Error details:', errorText);
+            // Fallback to simulation if API fails
+            console.log('🔄 Falling back to simulation');
+            const mockResult = simulateAIDetection();
+            displayDetectionResult(mockResult);
+            addToDetectionHistory(mockResult);
+            showAIAnalysis(mockResult);
+        }
+    } catch (error) {
+        console.error('🌐 Network Error:', error);
+        console.log('🔄 Falling back to simulation');
+        // Fallback to simulation if network fails
         const mockResult = simulateAIDetection();
         displayDetectionResult(mockResult);
         addToDetectionHistory(mockResult);
         showAIAnalysis(mockResult);
-    }, 1000);
+    }
 }
 
 // Simulate AI detection
@@ -269,21 +323,34 @@ function generateAIReasoning(label) {
     return reasonings[label] || "Audio analysis completed with standard parameters.";
 }
 
-// Display detection result
+// Display detection result from Huawei ModelArts
 function displayDetectionResult(result) {
-    const alertClass = result.riskLevel === 'safe' ? 'alert-success' : 
-                      result.riskLevel === 'warning' ? 'alert-warning' : 'alert-danger';
+    const emotion = result.emotion || result.label;
+    const confidence = result.confidence || result.probability;
+    const riskLevel = result.risk_level || result.riskLevel;
+    
+    // Check if this is real Huawei data or simulation
+    const isRealAI = result.model_source === 'Huawei ModelArts';
+    const source = isRealAI ? '🤖 Huawei ModelArts' : '🎭 Simulation';
+    
+    const alertClass = riskLevel === 'safe' ? 'alert-success' : 
+                      riskLevel === 'warning' ? 'alert-warning' : 'alert-danger';
     
     detectionResult.className = `alert ${alertClass}`;
     detectionResult.innerHTML = `
-        <strong>Detection:</strong> ${result.label.toUpperCase()} 
-        <span class="badge bg-secondary">${Math.round(result.probability * 100)}%</span>
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <strong>${source}:</strong> ${emotion.toUpperCase().replace('_', ' ')} 
+                <span class="badge bg-secondary">${Math.round(confidence * 100)}%</span>
+            </div>
+            <small class="text-muted">${isRealAI ? 'Real AI Model' : 'Fallback Mode'}</small>
+        </div>
     `;
     detectionResult.classList.remove('d-none');
     
     setTimeout(() => {
         detectionResult.classList.add('d-none');
-    }, 3000);
+    }, 5000);
 }
 
 // Add to detection history

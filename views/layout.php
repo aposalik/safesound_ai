@@ -31,18 +31,12 @@
                     <li class="nav-item">
                         <a class="nav-link <?php echo $page === 'contact' ? 'active' : ''; ?>" href="?page=contact">Contact</a>
                     </li>
-                    <?php if (isset($_SESSION['user_id'])): ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?php echo $page === 'test' ? 'active' : ''; ?>" href="?page=test">AI Test</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link btn btn-primary-glow text-white ms-2 px-3" href="?page=dashboard">Dashboard</a>
                     </li>
-                    <?php else: ?>
-                    <li class="nav-item">
-                        <a class="nav-link" href="?page=login">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link btn btn-primary-glow text-white ms-2 px-3" href="?page=signup">Sign Up</a>
-                    </li>
-                    <?php endif; ?>
                 </ul>
             </div>
         </div>

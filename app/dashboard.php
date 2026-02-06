@@ -4,14 +4,11 @@
         <div class="row align-items-center">
             <div class="col-lg-8">
                 <h1 class="display-6 fw-bold text-gradient">SafeSound Dashboard</h1>
-                <p class="text-muted">Welcome back, <?php echo $_SESSION['user_name']; ?>!</p>
+                <p class="text-muted">Real-time audio monitoring and threat detection</p>
             </div>
             <div class="col-lg-4 text-end">
                 <span class="status-indicator status-safe"></span>
                 <span class="fw-bold text-success">System Active</span>
-                <a href="?page=logout" class="btn btn-outline-danger btn-sm ms-3">
-                    <i class="fas fa-sign-out-alt me-1"></i>Logout
-                </a>
             </div>
         </div>
     </div>
@@ -107,7 +104,7 @@
                     <div id="detectionsContainer">
                         <div class="text-center text-muted py-5">
                             <i class="fas fa-search mb-3" style="font-size: 2rem;"></i>
-                            <p>No detections yet. Start monitoring to see results.</p>
+                            <p> No detections yet. Start monitoring to see results. </p>
                         </div>
                     </div>
                 </div>

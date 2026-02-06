@@ -12,15 +12,9 @@
                     domestic violence, and emergency situations through advanced audio analysis.
                 </p>
                 <div class="d-flex gap-3">
-                    <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="?page=dashboard" class="btn btn-primary-glow btn-lg">
                         <i class="fas fa-play me-2"></i>Start Monitoring
                     </a>
-                    <?php else: ?>
-                    <a href="?page=signup" class="btn btn-primary-glow btn-lg">
-                        <i class="fas fa-user-plus me-2"></i>Get Started
-                    </a>
-                    <?php endif; ?>
                     <a href="?page=about" class="btn btn-outline-glow btn-lg">
                         Learn More
                     </a>
@@ -136,15 +130,9 @@
                 <div class="col-lg-9">
                     <h2 class="display-5 fw-bold mb-4 text-white">Ready to Enhance Your Safety?</h2>
                     <p class="lead text-secondary mb-5">Join thousands of families and institutions using SafeSound AI to protect what matters most.</p>
-                    <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="?page=dashboard" class="btn btn-primary-glow btn-lg px-5">
                         <i class="fas fa-rocket me-2"></i>Go to Dashboard
                     </a>
-                    <?php else: ?>
-                    <a href="?page=signup" class="btn btn-primary-glow btn-lg px-5">
-                        <i class="fas fa-rocket me-2"></i>Get Started Now
-                    </a>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>

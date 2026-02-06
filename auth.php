@@ -15,7 +15,7 @@ if ($_POST['action'] === 'login') {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
             $_SESSION['user_email'] = $email;
-            header('Location: /soundsafe/?page=dashboard');
+            header('Location: index.php?page=dashboard');
             exit;
         } else {
             header('Location: ?page=login&error=invalid');
@@ -61,7 +61,7 @@ if ($_POST['action'] === 'signup') {
             $_SESSION['user_id'] = $user_id;
             $_SESSION['user_name'] = $first_name . ' ' . $last_name;
             $_SESSION['user_email'] = $email;
-            header('Location: /soundsafe/?page=dashboard');
+            header('Location: index.php?page=dashboard');
             exit;
         }
     }
